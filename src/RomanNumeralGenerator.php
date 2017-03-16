@@ -7,11 +7,14 @@ namespace Larowlan\RomanNumeral;
  */
 class RomanNumeralGenerator {
 
-  const PART_MAP = [
-    1 => 'Bit',
-    10 => 'Ten',
-    100 => 'Hundred',
-    1000 => 'Thousand',
+  const ROMAN_SYMBOLS = [
+    1 => 'I',
+    5 => 'V',
+    10 => 'X',
+    50 => 'L',
+    100 => 'C',
+    500 => 'D',
+    1000 => 'M',
   ];
 
   /**
@@ -27,44 +30,66 @@ class RomanNumeralGenerator {
    */
   public function generate(int $number, bool $lowerCase = FALSE) : string {
     // check input
-    if ($number < 1 || $number > 3999) {
-      return "Not support $number yet.";
+    if ($number < 1) {
+      return "No corresponding expression in Roman numeral for $number.";
     }
 
-    $digit_array = $this->makeDigitArray($number); var_dump($digit_array);
+    $digits = $this->makeDigits($number);
 
     $roman_number = '';
 
-    foreach ($digit_array as $index => $digit) {
-      $part = self::PART_MAP[pow(10, $index)];
-      $method = "make${part}Part";
-      if (method_exists($this, $method)) {
-        $roman_number = $this->{$method}((int) $digit) . $roman_number;
-      }
-      
+    foreach ($digits as $pow => $digit) {
+      $roman_number = $this->transfer($pow, (int) $digit) . $roman_number;
     }
 
     return $roman_number;
   }
 
-  private function makeDigitArray(int $number) : array {
+  /**
+   * transfer number into reversed string array
+   * example: 1234 => ['4', '3', '2', '1']
+   * 
+   * @param  int    $number 
+   * @return array[string]
+   */
+  private function makeDigits(int $number) : array {
     return array_reverse(str_split((string) $number));
   }
 
-  private function makeBitPart(int $digit) {
-    return '1';
-  }
+  /**
+   * transfer alg based on power and digit
+   * 
+   * @param  int    $pow
+   *     power of 10
+   * @param  int    $digit
+   *     number below 10
+   * @return string
+   *     result string
+   */
+  private function transfer(int $pow, int $digit) : string {
+    $symbols = array_slice(self::ROMAN_SYMBOLS, $pow * 2, 3); //slice symbols against pow
 
-  private function makeTenPart(int $digit) {
-    return '2';
-  }
+    switch (true) {
+      case ($digit === 9):
+        return $symbols[0] . $symbols[2];
 
-  private function makeHundredPart(int $digit) {
-    return '3';
-  }
+      case ($digit < 9 && $digit >= 5):
+        $ret = $symbols[1];
+        while ($digit-- > 5) {
+          $ret .= $symbols[0];
+        }
+        return $ret;
 
-  private function makeThousandPart(int $digit) {
-    return '4';
+      case ($digit === 4):
+        return $symbols[0] . $symbols[1];
+
+      default:
+        $ret = '';
+        while ($digit-- > 0) {
+          $ret .= $symbols[0];
+        }
+        return $ret;
+    }
   }
 
 }
