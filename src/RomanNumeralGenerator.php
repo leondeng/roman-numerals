@@ -36,13 +36,13 @@ class RomanNumeralGenerator {
 
     $digits = $this->makeDigits($number);
 
-    $roman_number = '';
+    $romanNumber = '';
 
     foreach ($digits as $pow => $digit) {
-      $roman_number = $this->transfer($pow, (int) $digit) . $roman_number;
+      $romanNumber = $this->transfer($pow, (int) $digit) . $romanNumber;
     }
 
-    return $roman_number;
+    return $lowerCase ? strtolower($romanNumber) : $romanNumber;
   }
 
   /**

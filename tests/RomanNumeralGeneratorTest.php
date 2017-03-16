@@ -32,7 +32,9 @@ class RomanNumeralGeneratorTest extends \PHPUnit_Framework_TestCase {
    * @dataProvider providerTestGeneration
    */
   public function testGeneration($number, $expected) {
-    $this->assertEquals($expected, $this->generator->generate($number));
+    $this->assertEquals($expected, $this->generator->generate($number)); // test upper case
+
+    $this->assertEquals(strtolower($expected), $this->generator->generate($number, true)); // test lower case
   }
 
   /**
